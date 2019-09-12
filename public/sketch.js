@@ -231,7 +231,7 @@ function drawColorPick() {
     	rect(485, 300, 30, 30);
 	    fill(255, 255, 0);
 	    rect(515, 300, 30, 30);
-	    fill(0, 255, 0);
+	    fill(0, 200, 0);
 	    rect(485, 330, 30, 30);
 	    fill(0, 0, 255);
 	    rect(515, 330, 30, 30);
@@ -258,7 +258,7 @@ function showColor() {
 			fill(255, 255, 0);
 			break;
 			case 2:
-			fill(0, 255, 0);
+			fill(0, 200, 0);
 			break;
 			case 3:
 			fill(0, 0, 255);
