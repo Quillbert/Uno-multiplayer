@@ -20,6 +20,9 @@ function setup() {
   }
   startGame();
   cardFunctions();
+  if(current.type == 12) {
+  	turn += turnDir * 2;
+  }
 }
 
 function startGame() {
