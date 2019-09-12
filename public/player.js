@@ -13,7 +13,7 @@ class Player {
 			}
 		} else {
 			for(let i = 0; i < this.cards.length; i++) {
-				image(deckImage, (i%15) * 25, floor(i/15) * 35);
+				image(deckImage, this.x + (i%15) * 25, this.y + floor(i/15) * 35);
 			}
 		}
 	}
