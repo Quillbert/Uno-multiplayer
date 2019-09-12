@@ -133,6 +133,7 @@ function mousePressed() {
           if (players[length].cards.length <= 0) {
             noLoop();
             console.log("Player " + (turn + 1) + " wins!");
+            window.alert("Player " + (turn + 1) + " wins!");
           }
           selected = null;
           turn += turnDir;
