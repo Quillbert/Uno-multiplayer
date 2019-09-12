@@ -58,6 +58,9 @@ function draw() {
   players[turn].play();
   drawColorPick();
   showColor();
+  /*for(let i = 0; i < players.length; i++) {
+
+  }*/
 }
 
 function initializeDeck() {
@@ -130,7 +133,7 @@ function mousePressed() {
           		break;
           	}
           }
-          if (players[length].cards.length <= 0) {
+          if (players[turn].cards.length <= 0) {
             noLoop();
             console.log("Player " + (turn + 1) + " wins!");
             window.alert("Player " + (turn + 1) + " wins!");
