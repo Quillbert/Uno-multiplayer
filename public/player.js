@@ -5,7 +5,7 @@ class Player {
 		this.cards = [];
 	}
 	show() {
-		if(players[turn] === this) {
+		if((picking == null && players[turn] === this) || picking === this) {
 			for (let i = 0; i < this.cards.length; i++) {
 				this.cards[i].x = this.x + (i%15) * 25;
 				this.cards[i].y = this.y + floor(i/15) * 35;

@@ -7,6 +7,9 @@ var turn = 0;
 var turnDir = 1;
 var pickTime = false;
 var players = [];
+var picking = null;
+
+let socket;
 
 function preload() {
 	deckImage = loadImage("assets/Uno Deck.png");
@@ -14,6 +17,7 @@ function preload() {
 
 function setup() {
   // put setup code here
+  socket = io.connect(location.origin);
   createCanvas(700,500);
   for(let i = 0; i < 4; i++) {
   	players.push(new Player(100, (i+1) * 100));
@@ -93,17 +97,21 @@ function mousePressed() {
       if (mouseY > 300 && mouseY < 330) {
         current.col = 0;
         pickTime = false;
+        picking = null;
       } else if (mouseY > 330 && mouseY < 360) {
         current.col = 2;
         pickTime = false;
+        picking = null;
       }
     } else if (mouseX > 515 && mouseX < 545) {
       if (mouseY > 300 && mouseY < 330) {
         current.col = 1;
         pickTime = false;
+        picking = null;
       } else if (mouseY > 330 && mouseY < 360) {
         current.col = 3;
         pickTime = false;
+        picking = null;
       }
     }
   } else {
@@ -231,6 +239,11 @@ function drawColorPick() {
 
 function colorPick() {
 	pickTime = true;
+	turn -= turnDir;
+	turnWrap();
+	picking = players[turn];
+	turn += turnDir;
+	turnWrap;
 }
 
 function showColor() {
