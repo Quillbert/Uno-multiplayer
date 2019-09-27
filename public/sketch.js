@@ -58,9 +58,7 @@ function draw() {
   players[turn].play();
   drawColorPick();
   showColor();
-  /*for(let i = 0; i < players.length; i++) {
-
-  }*/
+  showUno();
 }
 
 function initializeDeck() {
@@ -133,12 +131,19 @@ function mousePressed() {
           		break;
           	}
           }
+          if(players[turn].cards.length == 1 && !players[turn].uno) {
+          	for(let i = 0; i < 2; i++) {
+          		players[turn].cards.push(deck[0]);
+		        deck.splice(0, 1);
+          	}
+          }
           if (players[turn].cards.length <= 0) {
             noLoop();
             console.log("Player " + (turn + 1) + " wins!");
             window.alert("Player " + (turn + 1) + " wins!");
           }
           selected = null;
+          players[turn].uno = false;
           turn += turnDir;
           cardFunctions();
         }
@@ -167,6 +172,8 @@ function mousePressed() {
         shuffleCards(deck);
       }
     }
+    turnWrap();
+	detectUno();
   }
 }
 
@@ -272,5 +279,24 @@ function showColor() {
 		}
 		rect(550, 250, 30, 32);
 		pop();
+	}
+}
+
+function showUno() {
+	if(players[turn].cards.length == 2 && !players[turn].uno) {
+		fill(230);
+		rect(500, 400, 70, 40);
+		fill(0);
+		textAlign(CENTER, CENTER);
+		textSize(20);
+		text("Uno", 535, 420);
+	} 
+}
+
+function detectUno() {
+	if(players[turn].cards.length == 2) {
+		if(mouseX > 500 && mouseX < 570 && mouseY > 400 && mouseY < 440) {
+			players[turn].uno = true;
+		}
 	}
 }
