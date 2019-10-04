@@ -21,6 +21,7 @@ function preload() {
 function setup() {
 	createCanvas(700,500);
 	socket = io.connect(location.origin);
+	//socket.emit('thing', getURLParams.game);
 	socket.emit('thing', "game");
 	socket.on('message', function(data) {
 		console.log(data);
@@ -50,6 +51,7 @@ function draw() {
 	    current.y = 250;
 	    current.show();
 	    showColor();
+	    showUno();
 	}
 	if(turn >= 0) {
 		image(deckImage, 500, 100);
@@ -75,6 +77,7 @@ function draw() {
 	if(pickTime) {
 		showColorPick();
 	}
+	showUnoCalled();
 }
 
 function update(data) {
@@ -96,6 +99,12 @@ function update(data) {
 	current.col = data.current.color;
 	turn = data.turn;
 	next = data.next;
+	for(let i = 0; i < players.length; i++) {
+		if(players[i].cards.length <= 0) {
+			noLoop();
+			window.alert("Player " + (i+1) + " wins!");
+		}
+	}
 }
 
 function initializeDeck() {
@@ -122,34 +131,53 @@ function initializeDeck() {
 
 function mousePressed() {
 	if(pickTime) {
+		if(selected == null) {
+			selected = current;
+		}
 		if (mouseX > 485 && mouseX <  515) {
         	if (mouseY > 300 && mouseY < 330) {
 		    	selected.col = 0;
 	        	pickTime = false;
 	        	send(selected);
+	        	
+	        	selected = null;
 	        } else if (mouseY > 330 && mouseY < 360) {
 		        selected.col = 2;
 		        pickTime = false;
 		        send(selected);
+		        
+		        selected = null;
 	        }
 	    } else if (mouseX > 515 && mouseX < 545) {
 	        if (mouseY > 300 && mouseY < 330) {
 		        selected.col = 1;
 		        pickTime = false;
 		        send(selected);
+		        
+		        selected = null; 
 		    } else if (mouseY > 330 && mouseY < 360) {
 		        selected.col = 3;
 		        pickTime = false;
 		        send(selected);
+		        
+		        selected = null;
 	        }
 	    }
 	} else if(turn == playerNum) {
 		if(mouseX > 505 && mouseX < 527 && mouseY > 250 && mouseY <282) {
 				if(selected != null) {
 				if(current.type == selected.type || current.col == selected.col) {
-					send(selected);
 					if(selected.col == 4) {
 						pickTime = true;
+					} else {
+						send(selected);
+						
+						selected = null;
+					}
+					if(selected != null) {
+						if(selected.col != 4) {
+							selected = null;
+						}
 					}
 				} else if(selected.col == 4) {
 					pickTime = true;
@@ -163,9 +191,12 @@ function mousePressed() {
 				});
 			} else {
 				drawCard();
+				
+				selected = null;
 			}
 		}
 	}
+	detectUno();
 }
 
 function send(card) {
@@ -173,7 +204,8 @@ function send(card) {
 		draw: false,
 		type: card.type,
 		color: card.col,
-		id: card.val 
+		id: card.val,
+		uno: players[playerNum].uno
 	}
 	if(!sent) {
 		socket.emit('turn', out);
@@ -225,4 +257,36 @@ function showColor() {
 		rect(550, 250, 30, 32);
 	}
 	pop();
+}
+
+function showUno() {
+	if(players[playerNum].cards.length == 2 && !players[playerNum].uno && playerNum == turn) {
+		fill(230);
+		rect(500, 400, 70, 40);
+		fill(0);
+		textAlign(CENTER, CENTER);
+		textSize(20);
+		text("Uno", 535, 420);
+	} 
+}
+
+function showUnoCalled() {
+	for(let i = 0; i < players.length; i++) {
+		if(players[i].cards.length == 1) {
+			fill(230);
+			rect(150, players[i].y, 32, 32);
+			fill(0);
+			textAlign(CENTER, CENTER);
+			textSize(20);
+			text("1", 166, players[i].y+16);
+		}
+	}
+}
+
+function detectUno() {
+	if(players[playerNum].cards.length == 2 && turn == playerNum) {
+		if(mouseX > 500 && mouseX < 570 && mouseY > 400 && mouseY < 440) {
+			players[playerNum].uno = true;
+		}
+	}
 }

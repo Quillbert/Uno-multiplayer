@@ -79,6 +79,7 @@ class Game {
 				for(let i = 0;  i < 2; i++) {
 					this.players[this.turn].cards.push(this.deck[0]);
 					this.deck.splice(0,1);
+					this.reShuffle();
 				}
 				this.turn += this.turnDir;
 				this.turnWrap();
@@ -99,6 +100,7 @@ class Game {
 				for(let i = 0;  i < 4; i++) {
 					this.players[this.turn].cards.push(this.deck[0]);
 					this.deck.splice(0,1);
+					this.reShuffle();
 				}
 				this.turn += this.turnDir;
 				this.turnWrap();
@@ -114,6 +116,15 @@ class Game {
 		} else if(this.turn > this.players.length-1) {
 			this.turn = 0;
 		}
+	}
+	reShuffle() {
+		if (this.deck.length <= 0) {
+	        while (this.discard.length > 0) {
+	            this.deck.push(this.discard[0]);
+	            this.discard.splice(0,1);
+	        }
+	        shuffleCards(this.deck);
+	    }
 	}
 }
 
