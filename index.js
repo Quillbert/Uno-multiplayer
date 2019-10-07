@@ -10,31 +10,61 @@ app.use(express.static(__dirname + "/public"));
 var socket = require('socket.io');
 var io = socket(server);
 console.log("socket started");
-var game = new Game("game");
-var games;
+//var game = new Game("game");
+var games = [];
 io.on("connection", function(socket) {
-	userCount++;
-	console.log(userCount);
-	socket.on('disconnect', function(socket) {
-		userCount--;
-		console.log(userCount);
-		if(userCount <= 0) {
-			game = new Game("game");
+	socket.on('disconnect', function(data) {
+		var game;
+		console.log(socket.id);
+		for(let i = 0; i < games.length; i++) {
+			for(let j = 0; j < games[i].players.length; j++) {
+				if(games[i].players[j].id == socket.id) {
+					game = games[i];
+				}
+			}
+		}
+		console.log(game);
+		if(game != null) {
+			io.to(game.id).emit('oops', "d");
+		}
+		for(let i = 0; i < games.length; i++) {
+			if(games[i] == game) {
+				games.splice(i,1);
+			}
 		}
 	});
 	socket.on('thing', function(data) {
+		game = games.find(function(element) {
+			return element.id == data;
+		});
+		socket.join(data);
+		//console.log(data);
+		if(game == null) {
+			games.push(new Game(data));
+			game = games[games.length-1];
+		}
 		if(!game.started) {
 			io.to(socket.id).emit('thing', game.players.length);
 			game.players.push(new Player(0, 0, socket.id));
 			if(game.players.length == 4) {
 				game.begin();
 				state = findState(game);
-				io.emit('state', state);
+				io.to(data).emit('state', state);
 			}
+		} else {
+			socket.emit('thing', "too late");
 		}
 	});
 	socket.on('turn', function(data) {
+		var roomName = [];
+		for (var name in socket.rooms) {
+		    roomName.push(name);
+		}
+		console.log(roomName[1]);
 		console.log(data);
+		game = games.find(function(element) {
+			return element.id == roomName[1];
+		});
 		if(data.draw) {
 			if(game.current.col == game.deck[0].col || game.current.type == game.deck[0].type) {
 				game.discard.push(game.current);
@@ -46,7 +76,7 @@ io.on("connection", function(socket) {
 				game.turnWrap();
 				game.reShuffle();
 				state = findState(game);
-				io.emit('state', state);
+				io.to(roomName[1]).emit('state', state);
 			} else {
 				game.players[game.turn].cards.push(game.deck[0]);
 				game.deck.splice(0,1);
@@ -54,7 +84,7 @@ io.on("connection", function(socket) {
 				game.turn += game.turnDir;
 				game.turnWrap();
 				state = findState(game);
-				io.emit('state', state);
+				io.to(roomName[1]).emit('state', state);
 			}
 		} else {
 			var card = null;
@@ -98,7 +128,7 @@ io.on("connection", function(socket) {
 			game.turnWrap();
 		}
 		state = findState(game);
-		io.emit('state', state);
+		io.to(roomName[1]).emit('state', state);
 	});
 	//io.emit('message', "hello");
 });

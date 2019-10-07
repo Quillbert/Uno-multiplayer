@@ -9,6 +9,8 @@ var turn = -1;
 var pickTime = false;
 var sent = false;
 var next;
+var started = false;
+var late = false;;
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -21,63 +23,89 @@ function preload() {
 function setup() {
 	createCanvas(700,500);
 	socket = io.connect(location.origin);
-	//socket.emit('thing', getURLParams.game);
-	socket.emit('thing', "game");
+	socket.emit('thing', getURLParams().game);
+	//socket.emit('thing', "game");
 	socket.on('message', function(data) {
 		console.log(data);
 	});
 	socket.on('thing', function(data) {
-		console.log("PlayerNum = " + data);
-		playerNum = data;
+		if(data == "too late") {
+			late = true;
+		} else {
+			console.log("PlayerNum = " + data);
+			playerNum = data;
+		}
 	});
 	socket.on('state', function(data) {
 		//console.log(data.hands);
+		started = true;
 		update(data);
 		sent = false;
+	});
+	socket.on('oops', function(data) {
+		socket.disconnect();
+		window.alert("Someone decided to leave, effectively breaking this game. You will now be disconnected.");
+		window.location.replace("http://quillbert.tk/uno/");
 	});
 }
 
 function draw() {
 	background(200,0,0);
-	for(let i = 0; i < players.length; i++) {
-		if(i == playerNum) {
-			players[i].showHand();
-		} else {
-			players[i].showBack();
+	if(late) {
+		textAlign(CENTER, CENTER);
+		textSize(30);
+		fill(0);
+		text("This game has already started. Please try another game.", 350, 250);
+	} else if(!started) {
+		textAlign(CENTER, CENTER);
+		textSize(30);
+		fill(0);
+		text("Waiting for more players.", 350, 250);
+	} else {
+		textSize(15);
+		fill(0,0,0);
+		textAlign(LEFT, TOP)
+		text("Game Name: " + getURLParams().game, 550, 10);
+		for(let i = 0; i < players.length; i++) {
+			if(i == playerNum) {
+				players[i].showHand();
+			} else {
+				players[i].showBack();
+			}
 		}
+		if(current != null) {
+			current.x = 500;
+		    current.y = 250;
+		    current.show();
+		    showColor();
+		    showUno();
+		}
+		if(turn >= 0) {
+			image(deckImage, 500, 100);
+			players[playerNum].play();
+		}
+		fill(255,150,0);
+		switch(turn) {
+			case 0:
+				triangle(50,100,50,132,75,116);
+				break;
+			case 1:
+				triangle(50,200,50,232,75,216);
+				break;
+			case 2:
+				triangle(50,300,50,332,75,316);
+				break;
+			case 3:
+				triangle(50,400,50,432,75,416);
+				break;
+			default:
+				break;
+		}
+		if(pickTime) {
+			showColorPick();
+		}
+		showUnoCalled();
 	}
-	if(current != null) {
-		current.x = 500;
-	    current.y = 250;
-	    current.show();
-	    showColor();
-	    showUno();
-	}
-	if(turn >= 0) {
-		image(deckImage, 500, 100);
-		players[playerNum].play();
-	}
-	fill(255,150,0);
-	switch(turn) {
-		case 0:
-			triangle(50,100,50,132,75,116);
-			break;
-		case 1:
-			triangle(50,200,50,232,75,216);
-			break;
-		case 2:
-			triangle(50,300,50,332,75,316);
-			break;
-		case 3:
-			triangle(50,400,50,432,75,416);
-			break;
-		default:
-			break;
-	}
-	if(pickTime) {
-		showColorPick();
-	}
-	showUnoCalled();
 }
 
 function update(data) {
@@ -103,6 +131,7 @@ function update(data) {
 		if(players[i].cards.length <= 0) {
 			noLoop();
 			window.alert("Player " + (i+1) + " wins!");
+			window.location.replace("http://quillbert.tk/uno/");
 		}
 	}
 }
