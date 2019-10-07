@@ -22,6 +22,9 @@ function preload() {
 
 function setup() {
 	createCanvas(700,500);
+	if(getURLParams().game == "") {
+		window.location.replace("http://quillbert.tk/uno/");
+	}
 	socket = io.connect(location.origin);
 	socket.emit('thing', getURLParams().game);
 	//socket.emit('thing', "game");
