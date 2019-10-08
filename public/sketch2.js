@@ -243,6 +243,7 @@ function send(card) {
 		socket.emit('turn', out);
 	}
 	sent = true;
+	players[playerNum].uno = false;
 }
 
 function drawCard() {
