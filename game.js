@@ -47,7 +47,7 @@ class Game {
 		for(let i = 0; i < 4; i++) {
 			this.deck.push(new this.Card(0, i, valCount));
 			valCount++;
-			this.deck.push(new this.Card(14, 4, valCount));
+			this.deck.push(new this.Card(13, 4, valCount));
 			valCount++;
 			this.deck.push(new this.Card(14, 4, valCount));
 			valCount++;

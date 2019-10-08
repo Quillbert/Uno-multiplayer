@@ -153,7 +153,7 @@ function initializeDeck() {
 	for(let i = 0; i < 4; i++) {
 		deck.push(new Card(0, i, valCount));
 		valCount++;
-		deck.push(new Card(14, 4, valCount));
+		deck.push(new Card(13, 4, valCount));
 		valCount++;
 		deck.push(new Card(14, 4, valCount));
 		valCount++;
