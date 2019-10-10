@@ -65,10 +65,6 @@ function draw() {
 		fill(0);
 		text("Waiting for more players.", 350, 250);
 	} else {
-		textSize(15);
-		fill(0,0,0);
-		textAlign(LEFT, TOP)
-		text("Game Name: " + getURLParams().game, 550, 10);
 		for(let i = 0; i < players.length; i++) {
 			if(i == playerNum) {
 				players[i].showHand();
@@ -109,6 +105,10 @@ function draw() {
 		}
 		showUnoCalled();
 	}
+	textSize(15);
+	fill(0,0,0);
+	textAlign(LEFT, TOP)
+	text("Game Name: " + getURLParams().game, 550, 10);
 }
 
 function update(data) {
