@@ -110,8 +110,8 @@ function draw() {
 	}
 	textSize(15);
 	fill(0,0,0);
-	textAlign(LEFT, TOP)
-	text("Game Name: " + window.decodeURIComponent(getURLParams().game), 550, 10);
+	textAlign(RIGHT, TOP);
+	text("Game Name: " + window.decodeURIComponent(getURLParams().game), 680, 10);
 }
 
 function update(data) {
