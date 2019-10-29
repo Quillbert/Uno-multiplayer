@@ -10,7 +10,8 @@ var pickTime = false;
 var sent = false;
 var next;
 var started = false;
-var late = false;;
+var late = false;
+var finished = false;
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -47,7 +48,9 @@ function setup() {
 	});
 	socket.on('oops', function(data) {
 		socket.disconnect();
-		window.alert("Someone decided to leave, effectively breaking this game. You will now be disconnected.");
+		if(!finished) {
+			window.alert("Someone decided to leave, effectively breaking this game. You will now be disconnected.");
+		}
 		window.location.replace("http://quillbert.tk/uno/");
 	});
 }
@@ -134,6 +137,7 @@ function update(data) {
 		if(players[i].cards.length <= 0) {
 			noLoop();
 			window.alert("Player " + (i+1) + " wins!");
+			finished = true;
 			window.location.replace("http://quillbert.tk/uno/");
 		}
 	}
