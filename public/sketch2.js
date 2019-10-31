@@ -12,6 +12,8 @@ var next;
 var started = false;
 var late = false;
 var finished = false;
+var displayText = "";
+var titleText = "";
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -22,6 +24,13 @@ function preload() {
 }
 
 function setup() {
+	setInterval(function() {
+		if(finished && document.visibilityState == 'visible') {
+			setTimeout(function() {
+				window.location.replace("http://quillbert.tk/uno/");
+			}, 4000);
+		}
+	}, 100);
 	createCanvas(700,500);
 	if(getURLParams().game == null) {
 		window.location.replace("http://quillbert.tk/uno/");
@@ -49,9 +58,10 @@ function setup() {
 	socket.on('oops', function(data) {
 		socket.disconnect();
 		if(!finished) {
-			window.alert("Someone decided to leave, effectively breaking this game. You will now be disconnected.");
+			window.document.title = "Oops!";
+			finished = true;
+			displayText = "Someone left, ending this game. :(";
 		}
-		window.location.replace("http://quillbert.tk/uno/");
 	});
 }
 
@@ -112,6 +122,12 @@ function draw() {
 	fill(0,0,0);
 	textAlign(RIGHT, TOP);
 	text("Game Name: " + window.decodeURIComponent(getURLParams().game), 680, 10);
+	if(finished) {
+		textAlign(CENTER,CENTER);
+		textSize(30);
+		text(displayText, 350, 250);
+		noLoop();
+	}
 }
 
 function update(data) {
@@ -135,10 +151,12 @@ function update(data) {
 	next = data.next;
 	for(let i = 0; i < players.length; i++) {
 		if(players[i].cards.length <= 0) {
-			noLoop();
-			window.alert("Player " + (i+1) + " wins!");
+			textAlign(CENTER,CENTER);
+			textSize(30);
+			window.document.title = "Player " + (i+1) + " wins!";
+			text("Player " + (i+1) + " wins!", 350, 250);
+			displayText = "Player " + (i+1) + " wins!"
 			finished = true;
-			window.location.replace("http://quillbert.tk/uno/");
 		}
 	}
 }
