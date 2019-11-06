@@ -121,7 +121,7 @@ function draw() {
 	textSize(15);
 	fill(0,0,0);
 	textAlign(RIGHT, TOP);
-	text("Game Name: " + window.decodeURIComponent(getURLParams().game), 680, 10);
+	text("Game Code: " + window.decodeURIComponent(getURLParams().game), 680, 10);
 	if(finished) {
 		textAlign(CENTER,CENTER);
 		textSize(30);
