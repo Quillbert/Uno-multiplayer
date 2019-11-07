@@ -132,6 +132,28 @@ io.on("connection", function(socket) {
 		state = findState(game);
 		io.to(roomName[1]).emit('state', state);
 	});
+	socket.on('games', function(data) {
+		var gameIds = [];
+		for(let i = 0; i < games.length; i++) {
+			if(games[i].public) {
+				gameIds.push(games[i].id);
+			}
+		}
+		io.emit('games', gameIds);
+	});
+	socket.on('try', function(data) {
+		var game = games.find(function(element) {
+			return data.name == element.id;
+		});
+		if(game == null) {
+			games.push(new Game(data));
+			game = games[games.length-1];
+			game.public = data.public;
+			io.to(socket.id).emit("confirm", true);
+		} else {
+			io.to(socket.id).emit("confirm", false);
+		}
+	});
 	//io.emit('message', "hello");
 });
 

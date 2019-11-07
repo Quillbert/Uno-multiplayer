@@ -10,6 +10,7 @@ class Game {
 		this.turnDir = 1;
 		this.players = [];
 		this.started = false;
+		this.public = true;
 	}
 	begin() {
 		this.started = true;
