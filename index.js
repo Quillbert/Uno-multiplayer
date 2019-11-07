@@ -146,7 +146,7 @@ io.on("connection", function(socket) {
 			return data.name == element.id;
 		});
 		if(game == null) {
-			games.push(new Game(data));
+			games.push(new Game(data.name));
 			game = games[games.length-1];
 			game.public = data.public;
 			io.to(socket.id).emit("confirm", true);
