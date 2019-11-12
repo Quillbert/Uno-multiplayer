@@ -12,6 +12,13 @@ var io = socket(server);
 console.log("socket started");
 //var game = new Game("game");
 var games = [];
+setInterval(function() {
+	for(let i = 0; i < games.length; i++) {
+		if(games[i].players.length <= 0) {
+			games.splice(i, 1);
+		}
+	}
+}, 10000);
 io.on("connection", function(socket) {
 	socket.on('disconnect', function(data) {
 		var game;
@@ -40,7 +47,7 @@ io.on("connection", function(socket) {
 		socket.join(data);
 		//console.log(data);
 		if(game == null) {
-			games.push(new Game(data));
+			games.push(new Game(data.replace(/[^a-zA-Z0-9 ]/g, "")));
 			game = games[games.length-1];
 		}
 		if(!game.started) {
@@ -146,7 +153,7 @@ io.on("connection", function(socket) {
 			return data.name == element.id;
 		});
 		if(game == null) {
-			games.push(new Game(data.name));
+			games.push(new Game(data.name.replace(/[^a-zA-Z0-9 ]/g, "")));
 			game = games[games.length-1];
 			game.public = data.public;
 			io.to(socket.id).emit("confirm", true);
