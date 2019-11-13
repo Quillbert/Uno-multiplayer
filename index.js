@@ -47,7 +47,7 @@ io.on("connection", function(socket) {
 		socket.join(data);
 		//console.log(data);
 		if(game == null) {
-			games.push(new Game(decodeURI(data).replace(/[^a-zA-Z0-9 ]/g, "")));
+			games.push(new Game(decodeURI(data).replace(/[^a-zA-Z0-9]/g, "")));
 			game = games[games.length-1];
 		}
 		if(!game.started) {
@@ -153,7 +153,7 @@ io.on("connection", function(socket) {
 			return data.name == element.id;
 		});
 		if(game == null) {
-			games.push(new Game(decodeURI(data.name).replace(/[^a-zA-Z0-9 ]/g, "")));
+			games.push(new Game(decodeURI(data.name).replace(/[^a-zA-Z0-9]/g, "")));
 			game = games[games.length-1];
 			game.public = data.public;
 			io.to(socket.id).emit("confirm", true);
