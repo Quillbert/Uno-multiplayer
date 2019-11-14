@@ -19,7 +19,7 @@ class Card {
 		}
 	}
 	detect() {
-		if(mouseIsPressed) {
+		if(mouseIsPressed && !pickTime) {
 			if(mouseX > this.x + 5 && mouseX < this.x + 27 && mouseY > this.y && mouseY < this.y + 32) {
 				selected = this;
 			}

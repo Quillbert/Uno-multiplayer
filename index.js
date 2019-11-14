@@ -108,7 +108,9 @@ io.on("connection", function(socket) {
 					}
 				}
 				if(card != null) {
-					card.col = data.color;
+					if(card.type >= 13) {
+						card.col = data.color;
+					}
 					console.log(card);
 					if(game.current.type >= 13) {
 						game.current.col = 4;
