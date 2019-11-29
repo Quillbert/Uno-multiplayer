@@ -100,11 +100,13 @@ io.on("connection", function(socket) {
 				var card = null;
 				for(let i = 0; i < game.players[game.turn].cards.length; i++) {
 					if(data.id == game.players[game.turn].cards[i].val) {
-						card = game.players[game.turn].cards[i];
-						if(!data.uno && game.players[game.turn].cards.length == 2) {
-							for(let i = 0; i < 2; i++) {
-								game.players[game.turn].cards.push(game.deck[0]);
-								game.deck.splice(0,1);
+						if(data.type != 14 || cantPlayColor(game)) {
+							card = game.players[game.turn].cards[i];
+							if(!data.uno && game.players[game.turn].cards.length == 2) {
+								for(let i = 0; i < 2; i++) {
+									game.players[game.turn].cards.push(game.deck[0]);
+									game.deck.splice(0,1);
+								}
 							}
 						}
 					}
@@ -204,6 +206,17 @@ function findState(game) {
 function cantPlay(game) {
 	var wrong = game.players[game.turn].cards.find(function(element) {
 		return element.col == 4 || element.col == game.current.col || element.type == game.current.type;
+	});
+	if(wrong == null) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function cantPlayColor(game) {
+	var wrong = game.players[game.turn].cards.find(function(element) {
+		return element.col == game.current.col;
 	});
 	if(wrong == null) {
 		return true;

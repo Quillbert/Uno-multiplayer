@@ -222,7 +222,9 @@ function mousePressed() {
 			if(selected != null) {
 				if(current.type == selected.type || current.col == selected.col) {
 					if(selected.col == 4) {
-						pickTime = true;
+						if(selected.type != 14 || cantPlayColor()) {
+							pickTime = true;
+						}
 					} else {
 						send(selected);
 						
@@ -234,7 +236,9 @@ function mousePressed() {
 						}
 					}
 				} else if(selected.col == 4) {
-					pickTime = true;
+					if(selected.type != 14 || cantPlayColor()) {
+						pickTime = true;
+					}
 				}
 			}
 		} else if(mouseX > 505 && mouseX < 527 && mouseY > 100 && mouseY < 132 && cantPlay()) {
@@ -348,6 +352,16 @@ function detectUno() {
 function cantPlay() {
 	var wrong = players[playerNum].cards.find(function(element) {
 		return element.col == 4 || element.col == current.col || element.type == current.type;
+	});
+	if(wrong == null) {
+		return true;
+	} else {
+		return false;
+	}
+}
+function cantPlayColor() {
+	var wrong = players[playerNum].cards.find(function(element) {
+		return element.col == current.col;
 	});
 	if(wrong == null) {
 		return true;
