@@ -219,7 +219,7 @@ function mousePressed() {
 	    }
 	} else if(turn == playerNum) {
 		if(mouseX > 505 && mouseX < 527 && mouseY > 250 && mouseY <282) {
-				if(selected != null) {
+			if(selected != null) {
 				if(current.type == selected.type || current.col == selected.col) {
 					if(selected.col == 4) {
 						pickTime = true;
@@ -237,7 +237,7 @@ function mousePressed() {
 					pickTime = true;
 				}
 			}
-		} else if(mouseX > 505 && mouseX < 527 && mouseY > 100 && mouseY < 132) {
+		} else if(mouseX > 505 && mouseX < 527 && mouseY > 100 && mouseY < 132 && cantPlay()) {
 			if(next.type > 12) {
 				pickTime = true;
 				selected = deck.find(function(element) {
@@ -245,7 +245,6 @@ function mousePressed() {
 				});
 			} else {
 				drawCard();
-				
 				selected = null;
 			}
 		}
@@ -343,5 +342,16 @@ function detectUno() {
 		if(mouseX > 500 && mouseX < 570 && mouseY > 400 && mouseY < 440) {
 			players[playerNum].uno = true;
 		}
+	}
+}
+
+function cantPlay() {
+	var wrong = players[playerNum].cards.find(function(element) {
+		return element.col == 4 || element.col == current.col || element.type == current.type;
+	});
+	if(wrong == null) {
+		return true;
+	} else {
+		return false;
 	}
 }

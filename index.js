@@ -74,25 +74,27 @@ io.on("connection", function(socket) {
 		});
 		if(socket.id == game.players[game.turn].id) {
 			if(data.draw) {
-				if(game.current.col == game.deck[0].col || game.current.type == game.deck[0].type) {
-					game.discard.push(game.current);
-					game.current = game.deck[0];
-					game.deck.splice(0,1);
-					game.turn += game.turnDir;
-					game.turnWrap();
-					game.cardFunctions();
-					game.turnWrap();
-					game.reShuffle();
-					state = findState(game);
-					io.to(roomName[1]).emit('state', state);
-				} else {
-					game.players[game.turn].cards.push(game.deck[0]);
-					game.deck.splice(0,1);
-					game.reShuffle();
-					game.turn += game.turnDir;
-					game.turnWrap();
-					state = findState(game);
-					io.to(roomName[1]).emit('state', state);
+				if(cantPlay(game)){
+					if(game.current.col == game.deck[0].col || game.current.type == game.deck[0].type) {
+						game.discard.push(game.current);
+						game.current = game.deck[0];
+						game.deck.splice(0,1);
+						game.turn += game.turnDir;
+						game.turnWrap();
+						game.cardFunctions();
+						game.turnWrap();
+						game.reShuffle();
+						state = findState(game);
+						io.to(roomName[1]).emit('state', state);
+					} else {
+						game.players[game.turn].cards.push(game.deck[0]);
+						game.deck.splice(0,1);
+						game.reShuffle();
+						game.turn += game.turnDir;
+						game.turnWrap();
+						state = findState(game);
+						io.to(roomName[1]).emit('state', state);
+					}
 				}
 			} else {
 				var card = null;
@@ -124,18 +126,20 @@ io.on("connection", function(socket) {
 						}
 					}
 				} else {
-					if(data.id == game.deck[0].val) {
+					if(data.id == game.deck[0].val && cantPlay(game)) {
 						card = game.deck[0];
+						game.discard.push(game.current);
+						game.current = card;
+						game.current.col = data.color;
+						game.deck.splice(0,1);
 					}
-					game.discard.push(game.current);
-					game.current = card;
-					game.current.col = data.color;
-					game.deck.splice(0,1);
 				}
-				game.turn += game.turnDir;
-				game.turnWrap();
-				game.cardFunctions();
-				game.turnWrap();
+				if(card != null) {
+					game.turn += game.turnDir;
+					game.turnWrap();
+					game.cardFunctions();
+					game.turnWrap();
+				}
 			}
 		}
 		state = findState(game);
@@ -195,4 +199,15 @@ function findState(game) {
 		out.hands.push(hand);
 	}
 	return out;
+}
+
+function cantPlay(game) {
+	var wrong = game.players[game.turn].cards.find(function(element) {
+		return element.col == 4 || element.col == game.current.col || element.type == game.current.type;
+	});
+	if(wrong == null) {
+		return true;
+	} else {
+		return false;
+	}
 }
