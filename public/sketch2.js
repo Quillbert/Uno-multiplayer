@@ -224,7 +224,7 @@ function mousePressed() {
 					if(selected.col == 4) {
 						if(selected.type != 14 || cantPlayColor()) {
 							pickTime = true;
-						} else if(!cantPlayColor()) {
+						} else {
 							window.alert("You can only play a +4 if you do not have the current color.");
 						}
 					} else {
@@ -240,6 +240,8 @@ function mousePressed() {
 				} else if(selected.col == 4) {
 					if(selected.type != 14 || cantPlayColor()) {
 						pickTime = true;
+					} else {
+						window.alert("You can only play a +4 if you do not have the current color.");
 					}
 				}
 			}
