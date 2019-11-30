@@ -221,17 +221,8 @@ function mousePressed() {
 		if(mouseX > 505 && mouseX < 527 && mouseY > 250 && mouseY <282) {
 			if(selected != null) {
 				if(current.type == selected.type || current.col == selected.col) {
-					if(selected.col == 4) {
-						if(selected.type != 14 || cantPlayColor()) {
-							pickTime = true;
-						} else {
-							window.alert("You can only play a +4 if you do not have the current color.");
-						}
-					} else {
-						send(selected);
-						
-						selected = null;
-					}
+					send(selected);
+					selected = null;
 					if(selected != null) {
 						if(selected.col != 4) {
 							selected = null;
