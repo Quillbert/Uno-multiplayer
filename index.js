@@ -100,12 +100,14 @@ io.on("connection", function(socket) {
 				var card = null;
 				for(let i = 0; i < game.players[game.turn].cards.length; i++) {
 					if(data.id == game.players[game.turn].cards[i].val) {
-						if(data.type != 14 || cantPlayColor(game)) {
-							card = game.players[game.turn].cards[i];
-							if(!data.uno && game.players[game.turn].cards.length == 2) {
-								for(let i = 0; i < 2; i++) {
-									game.players[game.turn].cards.push(game.deck[0]);
-									game.deck.splice(0,1);
+						if(data.type == game.current.type || data.col == game.current.col || data.col == 4) {
+							if(data.type != 14 || cantPlayColor(game)) {
+								card = game.players[game.turn].cards[i];
+								if(!data.uno && game.players[game.turn].cards.length == 2) {
+									for(let i = 0; i < 2; i++) {
+										game.players[game.turn].cards.push(game.deck[0]);
+										game.deck.splice(0,1);
+									}
 								}
 							}
 						}
