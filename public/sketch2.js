@@ -224,6 +224,8 @@ function mousePressed() {
 					if(selected.col == 4) {
 						if(selected.type != 14 || cantPlayColor()) {
 							pickTime = true;
+						} else if(!cantPlayColor()) {
+							window.alert("You can only play a +4 if you do not have the current color.");
 						}
 					} else {
 						send(selected);
