@@ -98,17 +98,14 @@ io.on("connection", function(socket) {
 				}
 			} else {
 				var card = null;
-				for(let i = 0; i < game.players[game.turn].cards.length; i++) {
-					if(data.id == game.players[game.turn].cards[i].val) {
-						if(data.type != 14 || cantPlayColor(game)) {
-							card = game.players[game.turn].cards[i];
-							if(!data.uno && game.players[game.turn].cards.length == 2) {
-								for(let i = 0; i < 2; i++) {
-									game.players[game.turn].cards.push(game.deck[0]);
-									game.deck.splice(0,1);
-								}
-							}
-						}
+				card = game.players[game.turn].cards.find(function(element) {
+					return element.val == data.id;
+				});
+				if(card != null) {
+					if(card.col != game.current.col && card.type != game.current.type && card.col != 4) {
+						card = null;
+					} else if(card.type == 14 && !cantPlayColor()) {
+						card = null;
 					}
 				}
 				if(card != null) {
