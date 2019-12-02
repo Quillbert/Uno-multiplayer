@@ -147,7 +147,7 @@ io.on("connection", function(socket) {
 	socket.on('games', function(data) {
 		var gameIds = [];
 		for(let i = 0; i < games.length; i++) {
-			if(games[i].public) {
+			if(games[i].public && games[i].players.length < 4) {
 				gameIds.push(games[i].id);
 			}
 		}
