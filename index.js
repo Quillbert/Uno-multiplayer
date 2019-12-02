@@ -55,8 +55,7 @@ io.on("connection", function(socket) {
 			game.players.push(new Player(0, 0, socket.id));
 			if(game.players.length == 4) {
 				game.begin();
-				state = findState(game);
-				io.to(data).emit('state', state);
+				sendData(game);
 			}
 		} else {
 			socket.emit('thing', "too late");
@@ -84,16 +83,14 @@ io.on("connection", function(socket) {
 						game.cardFunctions();
 						game.turnWrap();
 						game.reShuffle();
-						state = findState(game);
-						io.to(roomName[1]).emit('state', state);
+						sendData(game);
 					} else {
 						game.players[game.turn].cards.push(game.deck[0]);
 						game.deck.splice(0,1);
 						game.reShuffle();
 						game.turn += game.turnDir;
 						game.turnWrap();
-						state = findState(game);
-						io.to(roomName[1]).emit('state', state);
+						sendData(game);
 					}
 				}
 			} else {
@@ -141,13 +138,12 @@ io.on("connection", function(socket) {
 				}
 			}
 		}
-		state = findState(game);
-		io.to(roomName[1]).emit('state', state);
+		sendData(game);
 	});
 	socket.on('games', function(data) {
 		var gameIds = [];
 		for(let i = 0; i < games.length; i++) {
-			if(games[i].public && games[i].players.length < 4) {
+			if(games[i].public && !game.started) {
 				gameIds.push(games[i].id);
 			}
 		}
@@ -219,5 +215,19 @@ function cantPlayColor(game) {
 		return true;
 	} else {
 		return false;
+	}
+}
+
+function sendData(game) {
+	for(let i = 0; i < game.players.length; i++) {
+		var playerData = findState(game);
+		for(let j = 0; j < playerData.hands.length; j++) {
+			if(j != i) {
+				for(let k = 0; k < playerData.hands[j].ids.length; k++) {
+					playerData.hands[j].ids[k] = -1;
+				}
+			}
+		}
+		io.to(game.players[i].id).emit('state', playerData);
 	}
 }
