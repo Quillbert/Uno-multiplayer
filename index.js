@@ -101,7 +101,7 @@ io.on("connection", function(socket) {
 				if(card != null) {
 					if(card.col != game.current.col && card.type != game.current.type && card.col != 4) {
 						card = null;
-					} else if(card.type == 14 && !cantPlayColor()) {
+					} else if(card.type == 14 && !cantPlayColor(game)) {
 						card = null;
 					}
 				}
