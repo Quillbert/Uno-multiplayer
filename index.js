@@ -1,11 +1,8 @@
 var express = require('express');
 var app = express();
 var server = app.listen(process.env.PORT || 3000);
-var state;
-var userCount = 0;
 const Game = require("./game.js");
 const Player = require("./player.js");
-const Card = require("./card.js");
 app.use(express.static(__dirname + "/public"));
 var socket = require('socket.io');
 var io = socket(server);

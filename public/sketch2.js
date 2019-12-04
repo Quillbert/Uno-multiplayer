@@ -45,7 +45,6 @@ function setup() {
 		if(data == "too late") {
 			late = true;
 		} else {
-			console.log("PlayerNum = " + data);
 			playerNum = data;
 		}
 	});

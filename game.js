@@ -11,6 +11,7 @@ class Game {
 		this.players = [];
 		this.started = false;
 		this.public = true;
+		this.stacking = false;
 	}
 	begin() {
 		this.started = true;
