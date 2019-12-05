@@ -14,6 +14,8 @@ var late = false;
 var finished = false;
 var displayText = "";
 var titleText = "";
+var scaleFactor;
+var mx, my;
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -31,7 +33,8 @@ function setup() {
 			}, 4000);
 		}
 	}, 100);
-	createCanvas(700,500);
+	//createCanvas(700,500);
+	createCanvas(windowWidth, windowHeight);
 	if(getURLParams().game == null) {
 		window.location.replace("http://quillbert.tk/uno/");
 	}
@@ -65,6 +68,10 @@ function setup() {
 }
 
 function draw() {
+	scaleFactor = min(width/700, height/500);
+	scale(scaleFactor);
+	mx = mouseX / scaleFactor;
+	my = mouseY / scaleFactor;
 	background(200,0,0);
 	if(late) {
 		textAlign(CENTER, CENTER);
@@ -187,28 +194,28 @@ function mousePressed() {
 		if(selected == null) {
 			selected = current;
 		}
-		if (mouseX > 485 && mouseX <  515) {
-        	if (mouseY > 300 && mouseY < 330) {
+		if (mx > 485 && mx <  515) {
+        	if (my > 300 && my < 330) {
 		    	selected.col = 0;
 	        	pickTime = false;
 	        	send(selected);
 	        	
 	        	selected = null;
-	        } else if (mouseY > 330 && mouseY < 360) {
+	        } else if (my > 330 && my < 360) {
 		        selected.col = 2;
 		        pickTime = false;
 		        send(selected);
 		        
 		        selected = null;
 	        }
-	    } else if (mouseX > 515 && mouseX < 545) {
-	        if (mouseY > 300 && mouseY < 330) {
+	    } else if (mx > 515 && mx < 545) {
+	        if (my > 300 && my < 330) {
 		        selected.col = 1;
 		        pickTime = false;
 		        send(selected);
 		        
 		        selected = null; 
-		    } else if (mouseY > 330 && mouseY < 360) {
+		    } else if (my > 330 && my < 360) {
 		        selected.col = 3;
 		        pickTime = false;
 		        send(selected);
@@ -217,7 +224,7 @@ function mousePressed() {
 	        }
 	    }
 	} else if(turn == playerNum) {
-		if(mouseX > 505 && mouseX < 527 && mouseY > 250 && mouseY <282) {
+		if(mx > 505 && mx < 527 && my > 250 && my <282) {
 			if(selected != null) {
 				if(current.type == selected.type || current.col == selected.col) {
 					send(selected);
@@ -235,7 +242,7 @@ function mousePressed() {
 					}
 				}
 			}
-		} else if(mouseX > 505 && mouseX < 527 && mouseY > 100 && mouseY < 132 && cantPlay()) {
+		} else if(mx > 505 && mx < 527 && my > 100 && my < 132 && cantPlay()) {
 			if(next.type > 12) {
 				pickTime = true;
 				selected = deck.find(function(element) {
@@ -337,7 +344,7 @@ function showUnoCalled() {
 
 function detectUno() {
 	if(players[playerNum].cards.length == 2 && turn == playerNum) {
-		if(mouseX > 500 && mouseX < 570 && mouseY > 400 && mouseY < 440) {
+		if(mx > 500 && mx < 570 && my > 400 && my < 440) {
 			players[playerNum].uno = true;
 		}
 	}
@@ -362,4 +369,10 @@ function cantPlayColor() {
 	} else {
 		return false;
 	}
+}
+
+function windowResized() {
+	resizeCanvas(windowWidth, windowHeight);
+	scaleFactor = min(width/700, height/500);
+	scale(scaleFactor);
 }

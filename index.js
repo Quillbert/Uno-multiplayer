@@ -70,7 +70,7 @@ io.on("connection", function(socket) {
 		});
 		if(socket.id == game.players[game.turn].id) {
 			if(data.draw) {
-				if(cantPlay(game)){
+				if(game.cantPlay()){
 					if(game.current.col == game.deck[0].col || game.current.type == game.deck[0].type) {
 						game.discard.push(game.current);
 						game.current = game.deck[0];
@@ -98,7 +98,7 @@ io.on("connection", function(socket) {
 				if(card != null) {
 					if(card.col != game.current.col && card.type != game.current.type && card.col != 4) {
 						card = null;
-					} else if(card.type == 14 && !cantPlayColor(game)) {
+					} else if(card.type == 14 && !game.cantPlayColor()) {
 						card = null;
 					}
 				}
@@ -119,7 +119,7 @@ io.on("connection", function(socket) {
 						}
 					}
 				} else {
-					if(data.id == game.deck[0].val && cantPlay(game)) {
+					if(data.id == game.deck[0].val && game.cantPlay()) {
 						card = game.deck[0];
 						game.discard.push(game.current);
 						game.current = card;
@@ -192,29 +192,6 @@ function findState(game) {
 	}
 	return out;
 }
-
-function cantPlay(game) {
-	var wrong = game.players[game.turn].cards.find(function(element) {
-		return element.col == 4 || element.col == game.current.col || element.type == game.current.type;
-	});
-	if(wrong == null) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-function cantPlayColor(game) {
-	var wrong = game.players[game.turn].cards.find(function(element) {
-		return element.col == game.current.col;
-	});
-	if(wrong == null) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
 function sendData(game) {
 	for(let i = 0; i < game.players.length; i++) {
 		var playerData = findState(game);

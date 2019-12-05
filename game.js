@@ -12,6 +12,7 @@ class Game {
 		this.started = false;
 		this.public = true;
 		this.stacking = false;
+		this.stackCount = 0;
 	}
 	begin() {
 		this.started = true;
@@ -78,13 +79,15 @@ class Game {
 			switch(this.current.type) {
 				case 10:
 				this.turnWrap();
-				for(let i = 0;  i < 2; i++) {
-					this.players[this.turn].cards.push(this.deck[0]);
-					this.deck.splice(0,1);
-					this.reShuffle();
+				if(!this.stacking) {
+					for(let i = 0;  i < 2; i++) {
+						this.players[this.turn].cards.push(this.deck[0]);
+						this.deck.splice(0,1);
+						this.reShuffle();
+					}
+					this.turn += this.turnDir;
+					this.turnWrap();
 				}
-				this.turn += this.turnDir;
-				this.turnWrap();
 				break;
 				case 11:
 				this.turn += this.turnDir;
@@ -99,13 +102,15 @@ class Game {
 				break;
 				case 14:
 				this.turnWrap();
-				for(let i = 0;  i < 4; i++) {
-					this.players[this.turn].cards.push(this.deck[0]);
-					this.deck.splice(0,1);
-					this.reShuffle();
+				if(!this.stacking) {
+					for(let i = 0;  i < 4; i++) {
+						this.players[this.turn].cards.push(this.deck[0]);
+						this.deck.splice(0,1);
+						this.reShuffle();
+					}
+					this.turn += this.turnDir;
+					this.turnWrap();
 				}
-				this.turn += this.turnDir;
-				this.turnWrap();
 				break;
 				default:
 				break;
@@ -127,6 +132,28 @@ class Game {
 	        }
 	        shuffleCards(this.deck);
 	    }
+	}
+	cantPlay() {
+		var game = this;
+		var wrong = this.players[game.turn].cards.find(function(element) {
+			return element.col == 4 || element.col == game.current.col || element.type == game.current.type;
+		});
+		if(wrong == null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	cantPlayColor() {
+		var game = this;
+		var wrong = this.players[game.turn].cards.find(function(element) {
+			return element.col == game.current.col;
+		});
+		if(wrong == null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
 
