@@ -330,7 +330,7 @@ function showColor() {
 }
 
 function showUno() {
-	if(players[playerNum].cards.length == 2 && !players[playerNum].uno && playerNum == turn) {
+	if(players[playerNum].cards.length == 2 && !players[playerNum].uno && playerNum == turn && !cantPlay()) {
 		fill(230);
 		rect(500, 400, 70, 40);
 		fill(0);
@@ -354,7 +354,7 @@ function showUnoCalled() {
 }
 
 function detectUno() {
-	if(players[playerNum].cards.length == 2 && turn == playerNum) {
+	if(players[playerNum].cards.length == 2 && turn == playerNum && !cantPlay()) {
 		if(mx > 500 && mx < 570 && my > 400 && my < 440) {
 			players[playerNum].uno = true;
 		}
