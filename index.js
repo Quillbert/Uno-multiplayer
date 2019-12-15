@@ -70,7 +70,9 @@ io.on("connection", function(socket) {
 		});
 		if(socket.id == game.players[game.turn].id) {
 			if(data.draw) {
-				if(game.cantPlay()){
+				if(game.stackCount > 0) {
+					game.acceptFate();
+				} else if(game.cantPlay()){
 					if(game.current.col == game.deck[0].col || game.current.type == game.deck[0].type) {
 						game.discard.push(game.current);
 						game.current = game.deck[0];
@@ -98,7 +100,11 @@ io.on("connection", function(socket) {
 				if(card != null) {
 					if(card.col != game.current.col && card.type != game.current.type && card.col != 4) {
 						card = null;
-					} else if(card.type == 14 && !game.cantPlayColor()) {
+					} else if(card.type == 14 && !game.cantPlayColor() && game.stackCount <= 0) {
+						card = null;
+					} else if(card.type > 12 && data.col == 4) {
+						card = null;
+					} else if(card.type != game.current.type && game.stackCount > 0) {
 						card = null;
 					}
 				}
@@ -140,8 +146,12 @@ io.on("connection", function(socket) {
 	socket.on('games', function(data) {
 		var gameIds = [];
 		for(let i = 0; i < games.length; i++) {
-			if(games[i].public && !game.started) {
-				gameIds.push(games[i].id);
+			if(games[i].public && !games[i].started) {
+				var s = games[i].id;
+				if(games[i].stacking) {
+					s = s.concat("[s]");
+				}
+				gameIds.push(s);
 			}
 		}
 		io.emit('games', gameIds);
@@ -154,6 +164,7 @@ io.on("connection", function(socket) {
 			games.push(new Game(decodeURI(data.name).replace(/[^a-zA-Z0-9]/g, "")));
 			game = games[games.length-1];
 			game.public = data.public;
+			game.stacking = data.stacking;
 			io.to(socket.id).emit("confirm", true);
 		} else {
 			io.to(socket.id).emit("confirm", false);
@@ -179,7 +190,8 @@ function findState(game) {
 		uno: {
 			player: 0,
 			happened: false
-		}
+		},
+		stackCount: game.stackCount
 	};
 	for(let i = 0; i < game.players.length; i++) {
 		var hand = {

@@ -16,6 +16,7 @@ var displayText = "";
 var titleText = "";
 var scaleFactor;
 var mx, my;
+var stackCount = 0;
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -97,6 +98,7 @@ function draw() {
 		    current.show();
 		    showColor();
 		    showUno();
+		    showAccept();
 		}
 		if(turn >= 0) {
 			image(deckImage, 500, 100);
@@ -106,15 +108,19 @@ function draw() {
 		switch(turn) {
 			case 0:
 				triangle(50,100,50,132,75,116);
+				showStackCount(18,100);
 				break;
 			case 1:
 				triangle(50,200,50,232,75,216);
+				showStackCount(18,200);
 				break;
 			case 2:
 				triangle(50,300,50,332,75,316);
+				showStackCount(18,300);
 				break;
 			case 3:
 				triangle(50,400,50,432,75,416);
+				showStackCount(18,400);
 				break;
 			default:
 				break;
@@ -155,6 +161,7 @@ function update(data) {
 	current.col = data.current.color;
 	turn = data.turn;
 	next = data.next;
+	stackCount = data.stackCount;
 	for(let i = 0; i < players.length; i++) {
 		if(players[i].cards.length <= 0) {
 			textAlign(CENTER,CENTER);
@@ -227,15 +234,18 @@ function mousePressed() {
 		if(mx > 505 && mx < 527 && my > 250 && my <282) {
 			if(selected != null) {
 				if(current.type == selected.type || current.col == selected.col) {
-					send(selected);
-					selected = null;
-					if(selected != null) {
-						if(selected.col != 4) {
-							selected = null;
+					if(selected.col == 4) {
+						if(selected.type != 14 || cantPlayColor() || stackCount > 0) {
+							pickTime = true;
+						} else {
+							window.alert("You can only play a +4 if you do not have the current color.");
 						}
+					} else {
+						send(selected);
+						selected = null;
 					}
 				} else if(selected.col == 4) {
-					if(selected.type != 14 || cantPlayColor()) {
+					if(selected.type != 14 || cantPlayColor() || stackCount > 0) {
 						pickTime = true;
 					} else {
 						window.alert("You can only play a +4 if you do not have the current color.");
@@ -255,6 +265,7 @@ function mousePressed() {
 		}
 	}
 	detectUno();
+	detectAccept();
 }
 
 function send(card) {
@@ -374,5 +385,34 @@ function cantPlayColor() {
 function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
 	scaleFactor = min(width/700, height/500);
-	scale(scaleFactor);
+}
+
+function showAccept() {
+	if(playerNum == turn && stackCount > 0) {
+		fill(230);
+		rect(500, 350, 70, 40);
+		fill(0);
+		textAlign(CENTER, CENTER);
+		textSize(18);
+		text("Accept", 535, 370);
+	} 
+}
+
+function detectAccept() {
+	if(stackCount > 0 && turn == playerNum) {
+		if(mx > 500 && mx < 570 && my > 350 && my < 390) {
+			drawCard();
+		}
+	}
+}
+
+function showStackCount(x, y) {
+	if(stackCount > 0) {
+		fill(255,150,0);
+		rect(x, y, 32, 32);
+		fill(0);
+		textSize(14);
+		textAlign(CENTER, CENTER);
+		text("+" + stackCount, x+16, y+16);
+	}
 }
