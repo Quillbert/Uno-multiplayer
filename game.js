@@ -10,7 +10,7 @@ class Game {
 		this.turnDir = 1;
 		this.players = [];
 		this.started = false;
-		this.public = true;
+		this.public = false;
 		this.stacking = false;
 		this.stackCount = 0;
 	}
