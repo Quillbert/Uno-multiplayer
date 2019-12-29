@@ -22,7 +22,16 @@ class Card {
 		if(mouseIsPressed && !pickTime) {
 			if(mx > this.x + 5 && mx < this.x + 27 && my > this.y && my < this.y + 32) {
 				selected = this;
+				return true;
 			}
 		}
+		return false;
+	}
+	mouseOver() {
+		if(mx > this.x + 5 && mx < this.x + 27 && my > this.y && my < this.y + 32) {
+				selected = this;
+				return true;
+		}
+		return false;
 	}
 }

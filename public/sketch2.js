@@ -416,3 +416,30 @@ function showStackCount(x, y) {
 		text("+" + stackCount, x+16, y+16);
 	}
 }
+
+function doubleClicked() {
+	for(let i = 0; i < players[playerNum].cards.length; i++) {
+		if(players[playerNum].cards[i].mouseOver()) {
+			if(selected != null) {
+				if(current.type == selected.type || current.col == selected.col) {
+					if(selected.col == 4) {
+						if(selected.type != 14 || cantPlayColor() || stackCount > 0) {
+							pickTime = true;
+						} else {
+							window.alert("You can only play a +4 if you do not have the current color.");
+						}
+					} else {
+						send(selected);
+						selected = null;
+					}
+				} else if(selected.col == 4) {
+					if(selected.type != 14 || cantPlayColor() || stackCount > 0) {
+						pickTime = true;
+					} else {
+						window.alert("You can only play a +4 if you do not have the current color.");
+					}
+				}
+			}
+		}
+	}
+}
