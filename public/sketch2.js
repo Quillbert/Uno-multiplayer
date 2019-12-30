@@ -69,11 +69,22 @@ function setup() {
 }
 
 function draw() {
+	push();
 	scaleFactor = min(width/700, height/500);
 	scale(scaleFactor);
 	mx = mouseX / scaleFactor;
 	my = mouseY / scaleFactor;
+	var transX = 0;
+	if(width > 700) {
+		transX = (width/2);
+		transX -= 350 * scaleFactor;
+		transX /= scaleFactor;
+	}
+	translate(transX, 0);
+	mx -= transX;
 	background(200,0,0);
+	line(0,0,0,500);
+	line(700,0,700,500);
 	if(late) {
 		textAlign(CENTER, CENTER);
 		textSize(30);
@@ -140,6 +151,7 @@ function draw() {
 		text(displayText, 350, 250);
 		noLoop();
 	}
+	pop();
 }
 
 function update(data) {
