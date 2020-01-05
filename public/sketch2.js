@@ -17,6 +17,8 @@ var titleText = "";
 var scaleFactor;
 var mx, my;
 var stackCount = 0;
+var forcePlay;
+var drew = false;
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -49,7 +51,8 @@ function setup() {
 		if(data == "too late") {
 			late = true;
 		} else {
-			playerNum = data;
+			playerNum = data.playerNum;
+			forcePlay = data.forcePlay;
 		}
 	});
 	socket.on('state', function(data) {
@@ -140,6 +143,7 @@ function draw() {
 			showColorPick();
 		}
 		showUnoCalled();
+		showKeepPlay();
 	}
 	textSize(15);
 	fill(0,0,0);
@@ -247,7 +251,7 @@ function mousePressed() {
 			if(selected != null) {
 				if(current.type == selected.type || current.col == selected.col) {
 					if(selected.col == 4) {
-						if(selected.type != 14 || cantPlayColor() || stackCount > 0) {
+						if(selected.type != 14 || cantPlayColor() || stackCount > 0 || !forcePlay) {
 							pickTime = true;
 						} else {
 							window.alert("You can only play a +4 if you do not have the current color.");
@@ -257,22 +261,26 @@ function mousePressed() {
 						selected = null;
 					}
 				} else if(selected.col == 4) {
-					if(selected.type != 14 || cantPlayColor() || stackCount > 0) {
+					if(selected.type != 14 || cantPlayColor() || stackCount > 0 || !forcePlay) {
 						pickTime = true;
 					} else {
 						window.alert("You can only play a +4 if you do not have the current color.");
 					}
 				}
 			}
-		} else if(mx > 505 && mx < 527 && my > 100 && my < 132 && cantPlay()) {
+		} else if(mx > 505 && mx < 527 && my > 100 && my < 132 && (cantPlay() || !forcePlay)) {
 			if(next.type > 12) {
 				pickTime = true;
 				selected = deck.find(function(element) {
 					return element.val == next.id;
 				});
 			} else {
-				drawCard();
-				selected = null;
+				if(forcePlay || (next.color != current.col && next.type != current.type)) {
+					drawCard();
+					selected = null;
+				} else {
+					drew = true;
+				}
 			}
 		}
 	}
@@ -435,7 +443,7 @@ function doubleClicked() {
 			if(selected != null) {
 				if(current.type == selected.type || current.col == selected.col) {
 					if(selected.col == 4) {
-						if(selected.type != 14 || cantPlayColor() || stackCount > 0) {
+						if(selected.type != 14 || cantPlayColor() || stackCount > 0 || !forcePlay) {
 							pickTime = true;
 						} else {
 							window.alert("You can only play a +4 if you do not have the current color.");
@@ -445,7 +453,7 @@ function doubleClicked() {
 						selected = null;
 					}
 				} else if(selected.col == 4) {
-					if(selected.type != 14 || cantPlayColor() || stackCount > 0) {
+					if(selected.type != 14 || cantPlayColor() || stackCount > 0 || !forcePlay) {
 						pickTime = true;
 					} else {
 						window.alert("You can only play a +4 if you do not have the current color.");
@@ -453,5 +461,16 @@ function doubleClicked() {
 				}
 			}
 		}
+	}
+}
+
+function showKeepPlay() {
+	if(drew) {
+		selected = deck.find(function(element) {
+			return element.val == next.id;
+		});
+		selected.x = 550;
+		selected.y = 100;
+		selected.show();
 	}
 }

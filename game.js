@@ -13,6 +13,7 @@ class Game {
 		this.public = false;
 		this.stacking = false;
 		this.stackCount = 0;
+		this.forcePlay = false;
 	}
 	begin() {
 		this.started = true;

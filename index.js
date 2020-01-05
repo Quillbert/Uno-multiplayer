@@ -48,7 +48,11 @@ io.on("connection", function(socket) {
 			game = games[games.length-1];
 		}
 		if(!game.started) {
-			io.to(socket.id).emit('thing', game.players.length);
+			var out  = {
+				playerNum: game.players.length,
+				forcePlay: game.forcePlay
+			}
+			io.to(socket.id).emit('thing', out);
 			game.players.push(new Player(0, 0, socket.id));
 			if(game.players.length == 4) {
 				game.begin();
@@ -72,7 +76,7 @@ io.on("connection", function(socket) {
 			if(data.draw) {
 				if(game.stackCount > 0) {
 					game.acceptFate();
-				} else if(game.cantPlay()){
+				} else if(game.cantPlay() || !game.stackCount){
 					if(game.current.col == game.deck[0].col || game.current.type == game.deck[0].type) {
 						game.discard.push(game.current);
 						game.current = game.deck[0];
@@ -100,7 +104,7 @@ io.on("connection", function(socket) {
 				if(card != null) {
 					if(card.col != game.current.col && card.type != game.current.type && card.col != 4) {
 						card = null;
-					} else if(card.type == 14 && !game.cantPlayColor() && game.stackCount <= 0) {
+					} else if(card.type == 14 && !game.cantPlayColor() && game.stackCount <= 0 && game.forcePlay) {
 						card = null;
 					} else if(card.type > 12 && data.col == 4) {
 						card = null;
@@ -125,7 +129,7 @@ io.on("connection", function(socket) {
 						}
 					}
 				} else {
-					if(data.id == game.deck[0].val && game.cantPlay()) {
+					if(data.id == game.deck[0].val && (game.cantPlay() || !game.forcePlay)) {
 						card = game.deck[0];
 						game.discard.push(game.current);
 						game.current = card;
