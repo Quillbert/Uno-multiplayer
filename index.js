@@ -152,8 +152,12 @@ io.on("connection", function(socket) {
 		for(let i = 0; i < games.length; i++) {
 			if(games[i].public && !games[i].started) {
 				var s = games[i].id;
-				if(games[i].stacking) {
+				if(games[i].stacking && games[i].forcePlay) {
+					s = s.concat("[s,f]");
+				} else if(games[i].stacking) {
 					s = s.concat("[s]");
+				} else if(games[i].forcePlay) {
+					s = s.concat("[f]");
 				}
 				gameIds.push(s);
 			}
@@ -169,6 +173,7 @@ io.on("connection", function(socket) {
 			game = games[games.length-1];
 			game.public = data.public;
 			game.stacking = data.stacking;
+			game.forcePlay = data.forcePlay;
 			io.to(socket.id).emit("confirm", true);
 		} else {
 			io.to(socket.id).emit("confirm", false);
