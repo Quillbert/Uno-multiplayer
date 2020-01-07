@@ -269,13 +269,13 @@ function mousePressed() {
 				}
 			}
 		} else if(mx > 505 && mx < 527 && my > 100 && my < 132 && (cantPlay() || !forcePlay)) {
-			if(next.type > 12) {
+			if(next.type > 12 && forcePlay) {
 				pickTime = true;
 				selected = deck.find(function(element) {
 					return element.val == next.id;
 				});
 			} else {
-				if(forcePlay || (next.color != current.col && next.type != current.type)) {
+				if(forcePlay || (next.color != current.col && next.type != current.type && next.color != 4)) {
 					drawCard();
 					selected = null;
 				} else {
@@ -286,6 +286,7 @@ function mousePressed() {
 	}
 	detectUno();
 	detectAccept();
+	detectKeepPlay();
 }
 
 function send(card) {
@@ -301,6 +302,8 @@ function send(card) {
 	}
 	sent = true;
 	players[playerNum].uno = false;
+	drew = false;
+	selected = null;
 }
 
 function drawCard() {
@@ -311,6 +314,7 @@ function drawCard() {
 		socket.emit('turn', out);
 	}
 	sent = true;
+	drew = false;
 }
 
 function showColorPick() {
@@ -472,5 +476,29 @@ function showKeepPlay() {
 		selected.x = 550;
 		selected.y = 100;
 		selected.show();
+		fill(230);
+		rect(470, 140, 70, 40);
+		rect(550, 140, 70, 40);
+		fill(0);
+		textSize(18);
+		textAlign(CENTER, CENTER);
+		text("Keep", 505, 160);
+		text("Play", 585, 160);
+	}
+}
+
+function detectKeepPlay() {
+	if(drew) {
+		if(mx > 470 && mx < 540 && my > 140 && my < 180) {
+			drawCard();
+			drew = false;
+		} else if(mx > 550 && mx < 620 && my > 140 && my < 180) {
+			if(selected.col == 4) {
+				pickTime = true;
+			} else {
+				send(selected);
+			}
+			drew = false;
+		}
 	}
 }

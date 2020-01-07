@@ -76,7 +76,7 @@ io.on("connection", function(socket) {
 			if(data.draw) {
 				if(game.stackCount > 0) {
 					game.acceptFate();
-				} else if(game.cantPlay() || !game.stackCount){
+				} else if(game.cantPlay() || !game.forcePlay){
 					if(game.current.col == game.deck[0].col || game.current.type == game.deck[0].type) {
 						game.discard.push(game.current);
 						game.current = game.deck[0];
