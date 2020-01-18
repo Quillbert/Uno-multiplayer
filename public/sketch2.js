@@ -19,6 +19,7 @@ var mx, my;
 var stackCount = 0;
 var forcePlay;
 var drew = false;
+var ui;
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -36,14 +37,13 @@ function setup() {
 			}, 4000);
 		}
 	}, 100);
-	//createCanvas(700,500);
 	createCanvas(windowWidth, windowHeight);
+	ui = new UI();
 	if(getURLParams().game == null) {
 		window.location.replace("http://quillbert.tk/uno/");
 	}
 	socket = io.connect(location.origin);
 	socket.emit('thing', getURLParams().game);
-	//socket.emit('thing', "game");
 	socket.on('message', function(data) {
 		console.log(data);
 	});
@@ -56,7 +56,6 @@ function setup() {
 		}
 	});
 	socket.on('state', function(data) {
-		//console.log(data.hands);
 		started = true;
 		update(data);
 		sent = false;
@@ -111,8 +110,6 @@ function draw() {
 		    current.y = 250;
 		    current.show();
 		    showColor();
-		    showUno();
-		    showAccept();
 		}
 		if(turn >= 0) {
 			image(deckImage, 500, 100);
@@ -143,7 +140,8 @@ function draw() {
 			showColorPick();
 		}
 		showUnoCalled();
-		showKeepPlay();
+		showNextCard();
+		ui.show();
 	}
 	textSize(15);
 	fill(0,0,0);
@@ -159,15 +157,12 @@ function draw() {
 }
 
 function update(data) {
-	//console.log(data);
 	for(let i = 0; i < data.hands.length; i++) {
 		players[i].cards.length = 0;
-		//console.log(data.hands[i].ids.length);
 		var handLength = data.hands[i].ids.length;
 		for(let j = 0; j < handLength; j++) {
 			players[i].cards.push(deck.find(function(element) {
 				return element.val == data.hands[i].ids[j];
-				//return deck[0];
 			}));
 		}
 	}
@@ -284,9 +279,7 @@ function mousePressed() {
 			}
 		}
 	}
-	detectUno();
-	detectAccept();
-	detectKeepPlay();
+	ui.mousePressed();
 }
 
 function send(card) {
@@ -306,15 +299,17 @@ function send(card) {
 	selected = null;
 }
 
-function drawCard() {
+function drawCard(k = false) {
 	var out = {
-		draw: true
+		draw: true,
+		keep: k
 	}
 	if(!sent) {
 		socket.emit('turn', out);
 	}
 	sent = true;
 	drew = false;
+	selected = null;
 }
 
 function showColorPick() {
@@ -353,17 +348,6 @@ function showColor() {
 	pop();
 }
 
-function showUno() {
-	if(players[playerNum].cards.length == 2 && !players[playerNum].uno && playerNum == turn && !cantPlay()) {
-		fill(230);
-		rect(500, 400, 70, 40);
-		fill(0);
-		textAlign(CENTER, CENTER);
-		textSize(20);
-		text("Uno", 535, 420);
-	} 
-}
-
 function showUnoCalled() {
 	for(let i = 0; i < players.length; i++) {
 		if(players[i].cards.length == 1) {
@@ -373,14 +357,6 @@ function showUnoCalled() {
 			textAlign(CENTER, CENTER);
 			textSize(20);
 			text("1", 166, players[i].y+16);
-		}
-	}
-}
-
-function detectUno() {
-	if(players[playerNum].cards.length == 2 && turn == playerNum && !cantPlay()) {
-		if(mx > 500 && mx < 570 && my > 400 && my < 440) {
-			players[playerNum].uno = true;
 		}
 	}
 }
@@ -409,25 +385,6 @@ function cantPlayColor() {
 function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
 	scaleFactor = min(width/700, height/500);
-}
-
-function showAccept() {
-	if(playerNum == turn && stackCount > 0) {
-		fill(230);
-		rect(500, 350, 70, 40);
-		fill(0);
-		textAlign(CENTER, CENTER);
-		textSize(18);
-		text("Accept", 535, 370);
-	} 
-}
-
-function detectAccept() {
-	if(stackCount > 0 && turn == playerNum) {
-		if(mx > 500 && mx < 570 && my > 350 && my < 390) {
-			drawCard();
-		}
-	}
 }
 
 function showStackCount(x, y) {
@@ -468,7 +425,7 @@ function doubleClicked() {
 	}
 }
 
-function showKeepPlay() {
+function showNextCard() {
 	if(drew) {
 		selected = deck.find(function(element) {
 			return element.val == next.id;
@@ -476,29 +433,5 @@ function showKeepPlay() {
 		selected.x = 550;
 		selected.y = 100;
 		selected.show();
-		fill(230);
-		rect(470, 140, 70, 40);
-		rect(550, 140, 70, 40);
-		fill(0);
-		textSize(18);
-		textAlign(CENTER, CENTER);
-		text("Keep", 505, 160);
-		text("Play", 585, 160);
-	}
-}
-
-function detectKeepPlay() {
-	if(drew) {
-		if(mx > 470 && mx < 540 && my > 140 && my < 180) {
-			drawCard();
-			drew = false;
-		} else if(mx > 550 && mx < 620 && my > 140 && my < 180) {
-			if(selected.col == 4) {
-				pickTime = true;
-			} else {
-				send(selected);
-			}
-			drew = false;
-		}
 	}
 }
