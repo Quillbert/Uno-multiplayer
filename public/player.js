@@ -5,6 +5,14 @@ class Player {
 		this.cards = [];
 		this.uno = false;
 		this.id = id;
+		this.unoButton = new Button(this.x+50, this.y, 32, 32, "!!", 20, false);
+		var player = this;
+		this.unoButton.setVisibilityTest(function() {
+			return players[previous] == player && !players[previous].uno && players[previous].cards.length == 1;
+		});
+		this.unoButton.setEffect(function() {
+			socket.emit("uno", 1);
+		});
 	}
 	show() {
 		if((picking == null && players[turn] === this) || picking === this) {
@@ -27,11 +35,15 @@ class Player {
 				this.cards[i].show();
 			}
 		}
+		this.unoButton.evaluateVisibility();
+		this.unoButton.show();
 	}
 	showBack() {
 		for(let i = 0; i < this.cards.length; i++) {
 			image(deckImage, this.x + (i%15) * 25, this.y + floor(i/15) * 35);
 		}
+		this.unoButton.evaluateVisibility();
+		this.unoButton.show();
 	}
 	play() {
 		for(let i = 0; i < this.cards.length; i++) {

@@ -14,12 +14,14 @@ class Game {
 		this.stacking = false;
 		this.stackCount = 0;
 		this.forcePlay = false;
+		this.previous = 0;
 	}
 	begin() {
 		this.started = true;
 		this.startGame();
 		this.cardFunctions();
 		if(this.current.type == 12) {
+			this.previous = this.turn;
 			this.turn += this.turnDir * 2;
 		}
 	}
@@ -59,7 +61,7 @@ class Game {
 		this.shuffleCards(this.deck);
 	}
 	dealHands() {
-		for(let i = 0; i < 7; i++) {
+		for(let i = 0; i < 3; i++) {
 			for(let j = 0; j < this.players.length; j++) {
 				this.players[j].cards.push(this.deck[0]);
 				this.deck.splice(0, 1);

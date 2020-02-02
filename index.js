@@ -73,6 +73,10 @@ io.on("connection", function(socket) {
 			return element.id == roomName[1];
 		});
 		if(socket.id == game.players[game.turn].id) {
+			for(let i = 0; i < game.players.length; i++) {
+				game.players[i].uno = false;
+			}
+			game.players[game.turn].uno = data.uno;
 			if(data.draw) {
 				if(game.stackCount > 0) {
 					game.acceptFate();
@@ -81,6 +85,7 @@ io.on("connection", function(socket) {
 						game.discard.push(game.current);
 						game.current = game.deck[0];
 						game.deck.splice(0,1);
+						game.previous = game.turn;
 						game.turn += game.turnDir;
 						game.turnWrap();
 						game.cardFunctions();
@@ -91,6 +96,7 @@ io.on("connection", function(socket) {
 						game.players[game.turn].cards.push(game.deck[0]);
 						game.deck.splice(0,1);
 						game.reShuffle();
+						game.previous = game.turn;
 						game.turn += game.turnDir;
 						game.turnWrap();
 						sendData(game);
@@ -138,6 +144,7 @@ io.on("connection", function(socket) {
 					}
 				}
 				if(card != null) {
+					game.previous = game.turn;
 					game.turn += game.turnDir;
 					game.turnWrap();
 					game.cardFunctions();
@@ -179,6 +186,26 @@ io.on("connection", function(socket) {
 			io.to(socket.id).emit("confirm", false);
 		}
 	});
+	socket.on('uno', function(data) {
+		var game = games.find(function(element) {
+			return data.name = element.id;
+		});
+		if(game.players[game.previous].cards.length == 1 && !game.players[game.previous].uno) {
+			if(socket.id == game.players[game.previous].id) {
+				game.players[game.previous].uno = true;
+
+				console.log("here");
+			} else {
+				game.turn = game.previous;
+				game.forceDraw(2);
+				game.turn += game.turnDir;
+				game.turnWrap();
+				game.players[game.previous].uno = true;
+				console.log("here2");
+			}
+			sendData(game);
+		}
+	});
 	//io.emit('message', "hello");
 });
 
@@ -196,11 +223,9 @@ function findState(game) {
 		},
 		hands: [],
 		turn: game.turn,
-		uno: {
-			player: 0,
-			happened: false
-		},
-		stackCount: game.stackCount
+		uno: [],
+		stackCount: game.stackCount,
+		previous: game.previous
 	};
 	for(let i = 0; i < game.players.length; i++) {
 		var hand = {
@@ -210,6 +235,7 @@ function findState(game) {
 			hand.ids.push(game.players[i].cards[j].val);
 		}
 		out.hands.push(hand);
+		out.uno.push(game.players[i].uno);
 	}
 	return out;
 }

@@ -20,6 +20,7 @@ var stackCount = 0;
 var forcePlay;
 var drew = false;
 var ui;
+var previous = 0;
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -59,6 +60,7 @@ function setup() {
 		started = true;
 		update(data);
 		sent = false;
+		console.log(data);
 	});
 	socket.on('oops', function(data) {
 		socket.disconnect();
@@ -87,12 +89,12 @@ function draw() {
 	background(200,0,0);
 	line(0,0,0,500);
 	line(700,0,700,500);
-	if(late) {
+	if(late && !finished) {
 		textAlign(CENTER, CENTER);
 		textSize(30);
 		fill(0);
 		text("This game has already started. Please try another game.", 350, 250);
-	} else if(!started) {
+	} else if(!started && !finished) {
 		textAlign(CENTER, CENTER);
 		textSize(30);
 		fill(0);
@@ -158,6 +160,7 @@ function draw() {
 
 function update(data) {
 	for(let i = 0; i < data.hands.length; i++) {
+		players[i].uno = data.uno[i];
 		players[i].cards.length = 0;
 		var handLength = data.hands[i].ids.length;
 		for(let j = 0; j < handLength; j++) {
@@ -173,6 +176,7 @@ function update(data) {
 	turn = data.turn;
 	next = data.next;
 	stackCount = data.stackCount;
+	previous = data.previous;
 	for(let i = 0; i < players.length; i++) {
 		if(players[i].cards.length <= 0) {
 			textAlign(CENTER,CENTER);
@@ -280,6 +284,9 @@ function mousePressed() {
 		}
 	}
 	ui.mousePressed();
+	for(let i = 0; i < players.length; i++) {
+		players[i].unoButton.mousePressed();
+	}
 }
 
 function send(card) {
@@ -294,7 +301,7 @@ function send(card) {
 		socket.emit('turn', out);
 	}
 	sent = true;
-	players[playerNum].uno = false;
+	//players[playerNum].uno = false;
 	drew = false;
 	selected = null;
 }
@@ -350,7 +357,7 @@ function showColor() {
 
 function showUnoCalled() {
 	for(let i = 0; i < players.length; i++) {
-		if(players[i].cards.length == 1) {
+		if(players[i].uno && players[i].cards.length == 1) {
 			fill(230);
 			rect(150, players[i].y, 32, 32);
 			fill(0);
