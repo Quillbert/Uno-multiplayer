@@ -61,7 +61,7 @@ class Game {
 		this.shuffleCards(this.deck);
 	}
 	dealHands() {
-		for(let i = 0; i < 3; i++) {
+		for(let i = 0; i < 7; i++) {
 			for(let j = 0; j < this.players.length; j++) {
 				this.players[j].cards.push(this.deck[0]);
 				this.deck.splice(0, 1);
