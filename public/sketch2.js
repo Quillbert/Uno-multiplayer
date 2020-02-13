@@ -21,6 +21,7 @@ var forcePlay;
 var drew = false;
 var ui;
 var previous = 0;
+var animated = false;
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -212,7 +213,7 @@ function initializeDeck() {
 
 
 function mousePressed() {
-	if(pickTime) {
+	if(pickTime && !animated) {
 		if(selected == null) {
 			selected = current;
 		}
@@ -407,7 +408,7 @@ function showStackCount(x, y) {
 
 function doubleClicked() {
 	for(let i = 0; i < players[playerNum].cards.length; i++) {
-		if(players[playerNum].cards[i].mouseOver()) {
+		if(players[playerNum].cards[i].mouseOver() && turn == playerNum && !pickTime && !animated) {
 			if(selected != null) {
 				if(current.type == selected.type || current.col == selected.col) {
 					if(selected.col == 4) {
