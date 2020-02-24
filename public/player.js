@@ -30,9 +30,8 @@ class Player {
 	showHand() {
 		if(this.cards.length > 0) {
 			for (let i = 0; i < this.cards.length; i++) {
-				this.cards[i].x = this.x + (i%15) * 25;
-				this.cards[i].y = this.y + floor(i/15) * 35;
 				this.cards[i].show();
+				this.cards[i].move();
 			}
 		}
 		this.unoButton.evaluateVisibility();
@@ -40,10 +39,17 @@ class Player {
 	}
 	showBack() {
 		for(let i = 0; i < this.cards.length; i++) {
-			image(deckImage, this.x + (i%15) * 25, this.y + floor(i/15) * 35);
+			image(deckImage, this.cards[i].x, this.cards[i].y);
+			this.cards[i].move();
 		}
 		this.unoButton.evaluateVisibility();
 		this.unoButton.show();
+	}
+	assignCardLocations() {
+		for (let i = 0; i < this.cards.length; i++) {
+				this.cards[i].x = this.x + (i%15) * 25;
+				this.cards[i].y = this.y + floor(i/15) * 35;
+			}
 	}
 	play() {
 		for(let i = 0; i < this.cards.length; i++) {

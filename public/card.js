@@ -3,9 +3,23 @@ class Card {
 		this.val = val;
 		this.type = type;
 		this.col = col;
-		this.image = loadImage("assets/Uno_" + this.col + "-" + this.type +".png");
+		this.image = null;
+		if(val >= 0) {
+			this.image = loadImage("assets/Uno_" + this.col + "-" + this.type +".png");
+		}
 		this.x = 0;
 		this.y = 0;
+		this.tx = -1;
+		this.ty = -1;
+	}
+	move() {
+		if(animated && this.tx >= 0) {
+			this.x = lerp(this.x, this.tx, 0.1);
+			this.y = lerp(this.y, this.ty, 0.1);
+			if(dist(this.x, this.y, this.tx, this.ty) < 0.1) {
+				animated = false;
+			}
+		}
 	}
 	show() {
 		image(this.image, this.x, this.y);
@@ -33,5 +47,10 @@ class Card {
 				return true;
 		}
 		return false;
+	}
+	animate(x, y) {
+		animated = true;
+		this.tx = x;
+		this.ty = y;
 	}
 }

@@ -165,9 +165,13 @@ function update(data) {
 		players[i].cards.length = 0;
 		var handLength = data.hands[i].ids.length;
 		for(let j = 0; j < handLength; j++) {
-			players[i].cards.push(deck.find(function(element) {
+			var card = deck.find(function(element) {
 				return element.val == data.hands[i].ids[j];
-			}));
+			});
+			if(card == null) {
+				card = new Card(-1, -1, -1);
+			}
+			players[i].cards.push(card);
 		}
 	}
 	current = deck.find(function(element) {
@@ -179,6 +183,7 @@ function update(data) {
 	stackCount = data.stackCount;
 	previous = data.previous;
 	for(let i = 0; i < players.length; i++) {
+		players[i].assignCardLocations();
 		if(players[i].cards.length <= 0) {
 			textAlign(CENTER,CENTER);
 			textSize(30);
@@ -213,80 +218,82 @@ function initializeDeck() {
 
 
 function mousePressed() {
-	if(pickTime && !animated) {
-		if(selected == null) {
-			selected = current;
-		}
-		if (mx > 485 && mx <  515) {
-        	if (my > 300 && my < 330) {
-		    	selected.col = 0;
-	        	pickTime = false;
-	        	send(selected);
-	        	
-	        	selected = null;
-	        } else if (my > 330 && my < 360) {
-		        selected.col = 2;
-		        pickTime = false;
-		        send(selected);
-		        
-		        selected = null;
-	        }
-	    } else if (mx > 515 && mx < 545) {
-	        if (my > 300 && my < 330) {
-		        selected.col = 1;
-		        pickTime = false;
-		        send(selected);
-		        
-		        selected = null; 
-		    } else if (my > 330 && my < 360) {
-		        selected.col = 3;
-		        pickTime = false;
-		        send(selected);
-		        
-		        selected = null;
-	        }
-	    }
-	} else if(turn == playerNum) {
-		if(mx > 505 && mx < 527 && my > 250 && my <282) {
-			if(selected != null) {
-				if(current.type == selected.type || current.col == selected.col) {
-					if(selected.col == 4) {
+	if(!animated) {
+		if(pickTime) {
+			if(selected == null) {
+				selected = current;
+			}
+			if (mx > 485 && mx <  515) {
+	        	if (my > 300 && my < 330) {
+			    	selected.col = 0;
+		        	pickTime = false;
+		        	send(selected);
+		        	
+		        	selected = null;
+		        } else if (my > 330 && my < 360) {
+			        selected.col = 2;
+			        pickTime = false;
+			        send(selected);
+			        
+			        selected = null;
+		        }
+		    } else if (mx > 515 && mx < 545) {
+		        if (my > 300 && my < 330) {
+			        selected.col = 1;
+			        pickTime = false;
+			        send(selected);
+			        
+			        selected = null; 
+			    } else if (my > 330 && my < 360) {
+			        selected.col = 3;
+			        pickTime = false;
+			        send(selected);
+			        
+			        selected = null;
+		        }
+		    }
+		} else if(turn == playerNum) {
+			if(mx > 505 && mx < 527 && my > 250 && my <282) {
+				if(selected != null) {
+					if(current.type == selected.type || current.col == selected.col) {
+						if(selected.col == 4) {
+							if(selected.type != 14 || cantPlayColor() || stackCount > 0 || !forcePlay) {
+								pickTime = true;
+							} else {
+								window.alert("You can only play a +4 if you do not have the current color.");
+							}
+						} else {
+							send(selected);
+							selected = null;
+						}
+					} else if(selected.col == 4) {
 						if(selected.type != 14 || cantPlayColor() || stackCount > 0 || !forcePlay) {
 							pickTime = true;
 						} else {
 							window.alert("You can only play a +4 if you do not have the current color.");
 						}
-					} else {
-						send(selected);
-						selected = null;
-					}
-				} else if(selected.col == 4) {
-					if(selected.type != 14 || cantPlayColor() || stackCount > 0 || !forcePlay) {
-						pickTime = true;
-					} else {
-						window.alert("You can only play a +4 if you do not have the current color.");
 					}
 				}
-			}
-		} else if(mx > 505 && mx < 527 && my > 100 && my < 132 && (cantPlay() || !forcePlay)) {
-			if(next.type > 12 && forcePlay) {
-				pickTime = true;
-				selected = deck.find(function(element) {
-					return element.val == next.id;
-				});
-			} else {
-				if(forcePlay || (next.color != current.col && next.type != current.type && next.color != 4)) {
-					drawCard();
-					selected = null;
+			} else if(mx > 505 && mx < 527 && my > 100 && my < 132 && (cantPlay() || !forcePlay)) {
+				if(next.type > 12 && forcePlay) {
+					pickTime = true;
+					selected = deck.find(function(element) {
+						return element.val == next.id;
+					});
 				} else {
-					drew = true;
+					if(forcePlay || (next.color != current.col && next.type != current.type && next.color != 4)) {
+						drawCard();
+						selected = null;
+					} else {
+						drew = true;
+					}
 				}
 			}
 		}
-	}
-	ui.mousePressed();
-	for(let i = 0; i < players.length; i++) {
-		players[i].unoButton.mousePressed();
+		ui.mousePressed();
+		for(let i = 0; i < players.length; i++) {
+			players[i].unoButton.mousePressed();
+		}
 	}
 }
 
@@ -442,4 +449,8 @@ function showNextCard() {
 		selected.y = 100;
 		selected.show();
 	}
+}
+
+function keyPressed() {
+	players[0].cards[0].animate(random(0, 700), random(0, 500));
 }
