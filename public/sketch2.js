@@ -22,6 +22,7 @@ var drew = false;
 var ui;
 var previous = 0;
 var animated = false;
+var lastCard = null;
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -108,9 +109,13 @@ function draw() {
 				players[i].showBack();
 			}
 		}
+		if(lastCard != null) {
+			lastCard.x = 500;
+			lastCard.y = 250;
+			lastCard.show();
+		}
 		if(current != null) {
-			current.x = 500;
-		    current.y = 250;
+			current.move();
 		    current.show();
 		    showColor();
 		}
@@ -160,6 +165,20 @@ function draw() {
 }
 
 function update(data) {
+	lastCard = current;
+	current = deck.find(function(element) {
+		return element.val == data.current.id;
+	});
+	current.x = 500;
+	current.y = 250;
+	previous = data.previous;
+	if(data.hands[previous].ids.length < players[previous].cards.length) {
+		current.x = players[previous].x;
+		current.y = players[previous].y;
+		current.animate(500, 250);
+	} else if(data.hands[previous].ids.length > players[previous].cards.length) {
+		
+	}
 	for(let i = 0; i < data.hands.length; i++) {
 		players[i].uno = data.uno[i];
 		players[i].cards.length = 0;
@@ -174,14 +193,10 @@ function update(data) {
 			players[i].cards.push(card);
 		}
 	}
-	current = deck.find(function(element) {
-		return element.val == data.current.id;
-	});
 	current.col = data.current.color;
 	turn = data.turn;
 	next = data.next;
 	stackCount = data.stackCount;
-	previous = data.previous;
 	for(let i = 0; i < players.length; i++) {
 		players[i].assignCardLocations();
 		if(players[i].cards.length <= 0) {

@@ -16,8 +16,11 @@ class Card {
 		if(animated && this.tx >= 0) {
 			this.x = lerp(this.x, this.tx, 0.1);
 			this.y = lerp(this.y, this.ty, 0.1);
-			if(dist(this.x, this.y, this.tx, this.ty) < 0.1) {
+			if(dist(this.x, this.y, this.tx, this.ty) < 0.5) {
+				this.x = this.tx;
+				this.y = this.ty;
 				animated = false;
+				this.tx = -1;
 			}
 		}
 	}
