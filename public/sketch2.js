@@ -176,8 +176,10 @@ function update(data) {
 		current.x = players[previous].x;
 		current.y = players[previous].y;
 		current.animate(500, 250);
-	} else if(data.hands[previous].ids.length > players[previous].cards.length) {
-		
+	} else if(data.hands[previous].ids.length == players[previous].cards.length) {
+		current.x = 500;
+		current.y = 100;
+		current.animate(500, 250);
 	}
 	for(let i = 0; i < data.hands.length; i++) {
 		players[i].uno = data.uno[i];
@@ -355,7 +357,7 @@ function showColorPick() {
 
 function showColor() {
 	push();
-	if(current.type > 12) {
+	if(current.type > 12 && !animated) {
 		switch(current.col) {
 			case 0: 
 			fill(255, 0, 0);
