@@ -34,7 +34,7 @@ function preload() {
 
 function setup() {
 	setInterval(function() {
-		if(finished && document.visibilityState == 'visible') {
+		if(finished && document.visibilityState == 'visible' && !animated) {
 			setTimeout(function() {
 				window.location.replace("http://quillbert.tk/uno/");
 			}, 4000);
@@ -75,6 +75,12 @@ function setup() {
 }
 
 function draw() {
+	animated = false;
+	for(let i = 0; i < deck.length; i++) {
+		if(deck[i].animated) {
+			animated = true;
+		}
+	}
 	push();
 	scaleFactor = min(width/700, height/500);
 	scale(scaleFactor);
@@ -110,8 +116,11 @@ function draw() {
 			}
 		}
 		if(lastCard != null) {
+			lastCard.tx = 500;
+			lastCard.ty = 250;
 			lastCard.x = 500;
 			lastCard.y = 250;
+			lastCard.move();
 			lastCard.show();
 		}
 		if(current != null) {
@@ -155,7 +164,7 @@ function draw() {
 	fill(0,0,0);
 	textAlign(RIGHT, TOP);
 	text("Game Code: " + window.decodeURIComponent(getURLParams().game), 680, 10);
-	if(finished) {
+	if(finished && !animated) {
 		textAlign(CENTER,CENTER);
 		textSize(30);
 		text(displayText, 350, 250);
@@ -165,6 +174,11 @@ function draw() {
 }
 
 function update(data) {
+	players.length = data.hands.length;
+	if(lastCard != null) {
+		lastCard.tx = -1;
+		lastCard.animated = false;
+	}
 	lastCard = current;
 	current = deck.find(function(element) {
 		return element.val == data.current.id;
@@ -176,6 +190,15 @@ function update(data) {
 		current.x = players[previous].x;
 		current.y = players[previous].y;
 		current.animate(500, 250);
+		if(previous == playerNum) {
+			for(let i = 0; i < players[previous].cards.length; i++) {
+				if(players[previous].cards[i] == current) {
+					players[previous].cards.splice(i, 1);
+				}
+			}
+		} else {
+			players[previous].cards.pop();
+		}
 	} else if(data.hands[previous].ids.length == players[previous].cards.length) {
 		current.x = 500;
 		current.y = 100;
@@ -183,15 +206,17 @@ function update(data) {
 	}
 	for(let i = 0; i < data.hands.length; i++) {
 		players[i].uno = data.uno[i];
-		players[i].cards.length = 0;
+		//players[i].cards.length = 0;
 		var handLength = data.hands[i].ids.length;
-		for(let j = 0; j < handLength; j++) {
+		for(let j = players[i].cards.length; j < handLength; j++) {
 			var card = deck.find(function(element) {
 				return element.val == data.hands[i].ids[j];
 			});
 			if(card == null) {
 				card = new Card(-1, -1, -1);
 			}
+			card.x = 500;
+			card.y = 100;
 			players[i].cards.push(card);
 		}
 	}
@@ -308,9 +333,9 @@ function mousePressed() {
 			}
 		}
 		ui.mousePressed();
-		for(let i = 0; i < players.length; i++) {
-			players[i].unoButton.mousePressed();
-		}
+	}
+	for(let i = 0; i < players.length; i++) {
+		players[i].unoButton.mousePressed();
 	}
 }
 
@@ -466,8 +491,4 @@ function showNextCard() {
 		selected.y = 100;
 		selected.show();
 	}
-}
-
-function keyPressed() {
-	players[0].cards[0].animate(random(0, 700), random(0, 500));
 }

@@ -11,15 +11,16 @@ class Card {
 		this.y = 0;
 		this.tx = -1;
 		this.ty = -1;
+		this.animated = false;
 	}
 	move() {
-		if(animated && this.tx >= 0) {
+		if(this.animated && this.tx >= 0) {
 			this.x = lerp(this.x, this.tx, 0.1);
 			this.y = lerp(this.y, this.ty, 0.1);
 			if(dist(this.x, this.y, this.tx, this.ty) < 0.5) {
 				this.x = this.tx;
 				this.y = this.ty;
-				animated = false;
+				this.animated = false;
 				this.tx = -1;
 			}
 		}
@@ -52,7 +53,7 @@ class Card {
 		return false;
 	}
 	animate(x, y) {
-		animated = true;
+		this.animated = true;
 		this.tx = x;
 		this.ty = y;
 	}
