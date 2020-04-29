@@ -23,6 +23,7 @@ var ui;
 var previous = 0;
 var animated = false;
 var lastCard = null;
+var playerCount = 0;
 
 function preload() {
 	deckImage = loadImage('assets/Uno Deck.png');
@@ -72,6 +73,9 @@ function setup() {
 			displayText = "Someone left, ending this game. :(";
 		}
 	});
+	socket.on('player-count', function(data) {
+		playerCount = data;
+	});
 }
 
 function draw() {
@@ -107,6 +111,8 @@ function draw() {
 		textSize(30);
 		fill(0);
 		text("Waiting for more players.", 350, 250);
+		textSize(15);
+		text("Players Connected: " + playerCount + "/4", 350, 280);
 	} else {
 		for(let i = 0; i < players.length; i++) {
 			if(i == playerNum) {

@@ -58,6 +58,7 @@ io.on("connection", function(socket) {
 				game.begin();
 				sendData(game);
 			}
+			io.to(data).emit('player-count', game.players.length);
 		} else {
 			socket.emit('thing', "too late");
 		}
