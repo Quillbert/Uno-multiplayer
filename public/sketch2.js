@@ -76,6 +76,9 @@ function setup() {
 	socket.on('player-count', function(data) {
 		playerCount = data;
 	});
+	socket.on('assign', function(data) {
+		playerNum = data;
+	});
 }
 
 function draw() {

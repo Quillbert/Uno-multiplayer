@@ -29,11 +29,23 @@ io.on("connection", function(socket) {
 		}
 		console.log(game);
 		if(game != null) {
-			io.to(game.id).emit('oops', "d");
-		}
-		for(let i = 0; i < games.length; i++) {
-			if(games[i] == game) {
-				games.splice(i,1);
+			if(game.started) {
+				io.to(game.id).emit('oops', "d");
+				for(let i = 0; i < games.length; i++) {
+					if(games[i] == game) {
+						games.splice(i,1);
+					}
+				}
+			} else {
+				for(let i = 0; i < game.players.length; i++) {
+					if(game.players[i].id == socket.id) {
+						game.players.splice(i,1);
+						io.to(game.id).emit('player-count', game.players.length);
+						for(let i = 0; i < game.players.length; i++) {
+							io.to(game.players[i].id).emit('assign', i);
+						}
+					}
+				}
 			}
 		}
 	});
