@@ -167,7 +167,6 @@ function draw() {
 		}
 		showUnoCalled();
 		showNextCard();
-		ui.show();
 	}
 	textSize(15);
 	fill(0,0,0);
@@ -179,6 +178,7 @@ function draw() {
 		text(displayText, 350, 250);
 		noLoop();
 	}
+	ui.show();
 	pop();
 }
 

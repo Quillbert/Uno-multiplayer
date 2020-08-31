@@ -75,6 +75,21 @@ io.on("connection", function(socket) {
 			socket.emit('thing', "too late");
 		}
 	});
+	socket.on('begin', function(data) {
+		var roomName = [];
+		for (var name in socket.rooms) {
+		    roomName.push(name);
+		}
+		console.log(roomName[1]);
+		console.log(data);
+		game = games.find(function(element) {
+			return element.id == roomName[1];
+		});
+		if(socket.id == game.players[0].id && !game.started && game.players.length >= 2) {
+			game.begin();
+			sendData(game);
+		}
+	});
 	socket.on('turn', function(data) {
 		var roomName = [];
 		for (var name in socket.rooms) {

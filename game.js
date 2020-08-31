@@ -98,11 +98,16 @@ class Game {
 				this.turnWrap();
 				break;
 				case 12:
-				this.turnDir *= -1;
-				this.turn += this.turnDir;
-				this.turnWrap();
-				this.turn += this.turnDir;
-				this.turnWrap();
+				if(this.players.length == 2) {
+					this.turn -= this.turnDir;
+					this.turnWrap();
+				} else {
+					this.turnDir *= -1;
+					this.turn += this.turnDir;
+					this.turnWrap();
+					this.turn += this.turnDir;
+					this.turnWrap();
+				}
 				break;
 				case 14:
 				this.turnWrap();
