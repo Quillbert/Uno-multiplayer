@@ -3,6 +3,12 @@ var app = express();
 var server = app.listen(process.env.PORT || 3000);
 const Game = require("./game.js");
 const Player = require("./player.js");
+app.use((req, res, next) => {
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+   next();
+}) 
 app.use(express.static(__dirname + "/public"));
 var socket = require('socket.io');
 var io = socket(server);
