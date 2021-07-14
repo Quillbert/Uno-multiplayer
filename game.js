@@ -23,9 +23,9 @@ class Game {
 		if(this.current.type == 12) {
 			this.previous = this.turn;
 			this.turn += this.turnDir;
-			turnWrap();
+			this.turnWrap();
 			this.turn += this.turnDir;
-			turnWrap();
+			this.turnWrap();
 		}
 	}
 	startGame() {
