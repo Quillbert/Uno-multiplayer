@@ -22,7 +22,10 @@ class Game {
 		this.cardFunctions();
 		if(this.current.type == 12) {
 			this.previous = this.turn;
-			this.turn += this.turnDir * 2;
+			this.turn += this.turnDir;
+			turnWrap();
+			this.turn += this.turnDir;
+			turnWrap();
 		}
 	}
 	startGame() {
